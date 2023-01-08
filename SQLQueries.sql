@@ -2,7 +2,7 @@ USE ZNO_RES_DB
 GO
 
 
---розрахунок балів ЗНО та ДПА
+--СЂРѕР·СЂР°С…СѓРЅРѕРє Р±Р°Р»С–РІ Р—РќРћ С‚Р° Р”РџРђ
 DROP PROCEDURE IF EXISTS CountScore
 
 CREATE PROC CountScore
@@ -17,7 +17,7 @@ WHERE [dbo].[ResultInfo].test_score = [dbo].[ScoreScale].test_score AND [dbo].[R
 EXEC CountScore;
 
 
---середній бал за id
+--СЃРµСЂРµРґРЅС–Р№ Р±Р°Р» Р·Р° id
 DROP FUNCTION IF EXISTS dbo.AvgScoreById
 
 CREATE FUNCTION dbo.AvgScoreById(@id INT)
@@ -35,7 +35,7 @@ END;
 SELECT dbo.AvgScoreById(3) AS average_score
 
 
---загальний результат по кожному учаснику
+--Р·Р°РіР°Р»СЊРЅРёР№ СЂРµР·СѓР»СЊС‚Р°С‚ РїРѕ РєРѕР¶РЅРѕРјСѓ СѓС‡Р°СЃРЅРёРєСѓ
 CREATE VIEW results AS
 SELECT
 [dbo].[Student].student_id, [dbo].[InformationCard].info_card_id, [dbo].[Subject].subject_name, [dbo].[ResultInfo].res_info_id, 
@@ -49,7 +49,7 @@ SELECT * FROM results
 ORDER BY student_id
 
 
---ім'я, предмет, бал ЗНО
+--С–Рј'СЏ, РїСЂРµРґРјРµС‚, Р±Р°Р» Р—РќРћ
 SELECT
 [dbo].[Student].full_name, [dbo].[Subject].subject_name, [dbo].[ResultInfo].result
 FROM
@@ -58,7 +58,7 @@ JOIN [dbo].[Subject] ON [dbo].[Subject].subject_id = [dbo].[ResultInfo].subject_
 ORDER BY full_name
 
 
---ім'я, номер інф. картки, пін, рік отримання, предмети
+--С–Рј'СЏ, РЅРѕРјРµСЂ С–РЅС„. РєР°СЂС‚РєРё, РїС–РЅ, СЂС–Рє РѕС‚СЂРёРјР°РЅРЅСЏ, РїСЂРµРґРјРµС‚Рё
 SELECT
 [dbo].[Student].full_name, [dbo].[Student].info_card_id, [dbo].[InformationCard].pin_code, 
 [dbo].[InformationCard].year_of_receipt, [dbo].[Certificate].subjects
@@ -67,7 +67,7 @@ FROM
 JOIN [dbo].[Certificate] ON [dbo].[InformationCard].certificate_id = [dbo].[Certificate].certificate_id
 
 
---кількість зареєстрованих та тих, хто взяв участь за регіонами
+--РєС–Р»СЊРєС–СЃС‚СЊ Р·Р°СЂРµС”СЃС‚СЂРѕРІР°РЅРёС… С‚Р° С‚РёС…, С…С‚Рѕ РІР·СЏРІ СѓС‡Р°СЃС‚СЊ Р·Р° СЂРµРіС–РѕРЅР°РјРё
 SELECT
 [dbo].[TestingLocation].region, SUM([dbo].[Stats].registered_num) AS registered, 
 SUM([dbo].[Stats].participated_num) AS participated
@@ -76,7 +76,7 @@ FROM
 GROUP BY region
 
 
---середній бал за регіонами
+--СЃРµСЂРµРґРЅС–Р№ Р±Р°Р» Р·Р° СЂРµРіС–РѕРЅР°РјРё
 SELECT
 [dbo].[TestingLocation].region, AVG([dbo].[Stats].average_score) AS average_score
 FROM
@@ -84,7 +84,7 @@ FROM
 GROUP BY region
 
 
---середній бал по предметах
+--СЃРµСЂРµРґРЅС–Р№ Р±Р°Р» РїРѕ РїСЂРµРґРјРµС‚Р°С…
 SELECT
 [dbo].[Subject].subject_name, AVG([dbo].[ResultInfo].result) AS average_score
 FROM
@@ -92,7 +92,7 @@ FROM
 GROUP BY subject_name
 
 
---кількість людей з максимальним балом по предметах
+--РєС–Р»СЊРєС–СЃС‚СЊ Р»СЋРґРµР№ Р· РјР°РєСЃРёРјР°Р»СЊРЅРёРј Р±Р°Р»РѕРј РїРѕ РїСЂРµРґРјРµС‚Р°С…
 SELECT
 [dbo].[Subject].subject_name, COUNT([dbo].[ResultInfo].result) AS max_num
 FROM
@@ -101,41 +101,41 @@ WHERE [dbo].[ResultInfo].result = 200
 GROUP BY subject_name
 
 
---кількість людей в кожній сесії
+--РєС–Р»СЊРєС–СЃС‚СЊ Р»СЋРґРµР№ РІ РєРѕР¶РЅС–Р№ СЃРµСЃС–С—
 SELECT
 [dbo].[ResultInfo].session_name, COUNT([dbo].[Student].student_id) AS stud_num
 FROM [dbo].[ResultInfo] JOIN [dbo].[Student] ON [dbo].[ResultInfo].info_card_id = [dbo].[Student].info_card_id
 GROUP BY session_name
 
 
---кількість людей, які обрали предмети
+--РєС–Р»СЊРєС–СЃС‚СЊ Р»СЋРґРµР№, СЏРєС– РѕР±СЂР°Р»Рё РїСЂРµРґРјРµС‚Рё
 SELECT
 [dbo].[Subject].subject_name, COUNT([dbo].[ResultInfo].subject_id) AS stud_num
 FROM [dbo].[Subject] JOIN [dbo].[ResultInfo] ON [dbo].[Subject].subject_id = [dbo].[ResultInfo].subject_id
 GROUP BY subject_name
 
 
---шкала балів для конкретного предмета
+--С€РєР°Р»Р° Р±Р°Р»С–РІ РґР»СЏ РєРѕРЅРєСЂРµС‚РЅРѕРіРѕ РїСЂРµРґРјРµС‚Р°
 SELECT [dbo].[Subject].subject_name, [dbo].[ScoreScale].test_score, [dbo].[ScoreScale].rating_score, [dbo].[ScoreScale].sfe
 FROM [dbo].[Subject] JOIN [dbo].[ScoreScale] ON [dbo].[Subject].subject_id = [dbo].[ScoreScale].subject_id
 WHERE [dbo].[Subject].subject_id = 2
 
 
---кількість учасників, які мають 200
+--РєС–Р»СЊРєС–СЃС‚СЊ СѓС‡Р°СЃРЅРёРєС–РІ, СЏРєС– РјР°СЋС‚СЊ 200
 SELECT COUNT(DISTINCT [student_id]) AS stud_num
 FROM [dbo].[Student]
 JOIN  [dbo].[ResultInfo] ON [dbo].[ResultInfo].info_card_id = [dbo].[Student].info_card_id
 WHERE [dbo].[ResultInfo].result = 200
 
 
---імена тих, хто здавали в 2022
+--С–РјРµРЅР° С‚РёС…, С…С‚Рѕ Р·РґР°РІР°Р»Рё РІ 2022
 SELECT full_name
 FROM [dbo].[Student]
 JOIN [dbo].[InformationCard] ON [dbo].[Student].info_card_id = [dbo].[InformationCard].info_card_id
 WHERE [dbo].[InformationCard].year_of_receipt = 2022
 
 
---кількість людей по роках
+--РєС–Р»СЊРєС–СЃС‚СЊ Р»СЋРґРµР№ РїРѕ СЂРѕРєР°С…
 SELECT
 [dbo].[InformationCard].year_of_receipt, COUNT([dbo].[Student].student_id) AS stud_num
 FROM
@@ -143,28 +143,28 @@ FROM
 GROUP BY year_of_receipt
 
 
---список тих, хто не брав участь у зно та локація
+--СЃРїРёСЃРѕРє С‚РёС…, С…С‚Рѕ РЅРµ Р±СЂР°РІ СѓС‡Р°СЃС‚СЊ Сѓ Р·РЅРѕ С‚Р° Р»РѕРєР°С†С–СЏ
 SELECT [dbo].[Student].full_name, 
 ([dbo].[TestingLocation].region + ', ' + [dbo].[TestingLocation].district + ', ' + [dbo].[TestingLocation].settlement) AS region
 FROM [dbo].[Student] JOIN [dbo].[TestingLocation] ON [dbo].[Student].location_id = [dbo].[TestingLocation].location_id
 WHERE [dbo].[Student].participated = 0
 
 
---сортування по сумі балів
+--СЃРѕСЂС‚СѓРІР°РЅРЅСЏ РїРѕ СЃСѓРјС– Р±Р°Р»С–РІ
 SELECT [dbo].[Student].full_name, SUM([dbo].[ResultInfo].result) AS sum_result
 FROM [dbo].[Student] JOIN [dbo].[ResultInfo] ON [dbo].[Student].info_card_id = [dbo].[ResultInfo].info_card_id
 GROUP BY full_name
 ORDER BY sum_result DESC
 
 
---сортування по середньому балу
+--СЃРѕСЂС‚СѓРІР°РЅРЅСЏ РїРѕ СЃРµСЂРµРґРЅСЊРѕРјСѓ Р±Р°Р»Сѓ
 SELECT [dbo].[Student].full_name, AVG([dbo].[ResultInfo].result) AS avg_result
 FROM [dbo].[Student] JOIN [dbo].[ResultInfo] ON [dbo].[Student].info_card_id = [dbo].[ResultInfo].info_card_id
 GROUP BY full_name
 ORDER BY avg_result DESC
 
 
---кількість людей з двома і більше 200
+--РєС–Р»СЊРєС–СЃС‚СЊ Р»СЋРґРµР№ Р· РґРІРѕРјР° С– Р±С–Р»СЊС€Рµ 200
 SELECT COUNT(*) AS stud_num
 FROM (
 SELECT [student_id]
@@ -175,7 +175,7 @@ GROUP BY [student_id]
 HAVING COUNT(*) > 1) AS students
 
 
---кількість людей які подолали поріг по педметах
+--РєС–Р»СЊРєС–СЃС‚СЊ Р»СЋРґРµР№ СЏРєС– РїРѕРґРѕР»Р°Р»Рё РїРѕСЂС–Рі РїРѕ РїРµРґРјРµС‚Р°С…
 SELECT
 [dbo].[Subject].subject_name, COUNT([dbo].[ResultInfo].subject_id) AS stud_num
 FROM [dbo].[Subject] JOIN [dbo].[ResultInfo] ON [dbo].[Subject].subject_id = [dbo].[ResultInfo].subject_id
@@ -183,15 +183,30 @@ WHERE [dbo].[ResultInfo].result IS NOT NULL
 GROUP BY subject_name
 
 
---кількість людей які отримали >150 в основну сесію по педметах
+--РєС–Р»СЊРєС–СЃС‚СЊ Р»СЋРґРµР№ СЏРєС– РѕС‚СЂРёРјР°Р»Рё >150 РІ РѕСЃРЅРѕРІРЅСѓ СЃРµСЃС–СЋ РїРѕ РїРµРґРјРµС‚Р°С…
 SELECT
 [dbo].[Subject].subject_name, COUNT([dbo].[ResultInfo].subject_id) AS stud_num
 FROM [dbo].[Subject] JOIN [dbo].[ResultInfo] ON [dbo].[Subject].subject_id = [dbo].[ResultInfo].subject_id
-WHERE [dbo].[ResultInfo].result >= 150 AND [dbo].[ResultInfo].session_name = 'основна'
+WHERE [dbo].[ResultInfo].result >= 150 AND [dbo].[ResultInfo].session_name = 'Г®Г±Г­Г®ГўГ­Г '
 GROUP BY subject_name
 
 
---ідекс для шкали балів
+--СЂРµР№С‚РёРЅРі РїРѕРїСѓР»СЏСЂРЅРѕСЃС‚С– РїСЂРµРґРјРµС‚С–РІ
+SELECT
+ROW_NUMBER() OVER(ORDER BY COUNT([dbo].[ResultInfo].subject_id) DESC) subject_num, [dbo].[Subject].subject_name
+FROM [dbo].[Subject] JOIN [dbo].[ResultInfo] ON [dbo].[Subject].subject_id = [dbo].[ResultInfo].subject_id
+GROUP BY subject_name
+
+
+--РјС–РЅС–РјР°Р»СЊРЅРёР№ Р±Р°Р» РїРѕ РїСЂРµРґРјРµС‚Р°С…
+SELECT
+[dbo].[Subject].subject_name, MIN([dbo].[ResultInfo].result) AS average_score
+FROM
+[dbo].[Subject] JOIN [dbo].[ResultInfo] ON [dbo].[Subject].subject_id = [dbo].[ResultInfo].subject_id
+GROUP BY subject_name
+
+
+--С–РґРµРєСЃ РґР»СЏ С€РєР°Р»Рё Р±Р°Р»С–РІ
 DROP INDEX IF EXISTS [dbo].[ScoreScale].idx_subject_id
 
 CREATE INDEX idx_subject_id
@@ -208,7 +223,7 @@ SET STATISTICS TIME OFF;
 GO
 
 
---тригер на додавання учасника (оновлює статистику)
+--С‚СЂРёРіРµСЂ РЅР° РґРѕРґР°РІР°РЅРЅСЏ СѓС‡Р°СЃРЅРёРєР° (РѕРЅРѕРІР»СЋС” СЃС‚Р°С‚РёСЃС‚РёРєСѓ)
 DROP TRIGGER IF EXISTS Student_insert
 
 CREATE TRIGGER Student_insert
@@ -222,7 +237,7 @@ BEGIN
 	ON [dbo].[Student].location_id = [dbo].[Stats].location_id
 END;
 
---тригер на видалення учасника (оновлює статистику)
+--С‚СЂРёРіРµСЂ РЅР° РІРёРґР°Р»РµРЅРЅСЏ СѓС‡Р°СЃРЅРёРєР° (РѕРЅРѕРІР»СЋС” СЃС‚Р°С‚РёСЃС‚РёРєСѓ)
 DROP TRIGGER IF EXISTS Student_delete
 
 CREATE TRIGGER Student_delete
@@ -238,5 +253,5 @@ END;
 
 
 SELECT * FROM [dbo].[Stats] WHERE [location_id] = 1;
-INSERT INTO [dbo].[Student] ([full_name], [location_id]) VALUES ('Колодько О. А.', 1);
-DELETE FROM [dbo].[Student] WHERE [full_name] = 'Колодько О. А.';
+INSERT INTO [dbo].[Student] ([full_name], [location_id]) VALUES ('ГЉГ®Г«Г®Г¤ГјГЄГ® ГЋ. ГЂ.', 1);
+DELETE FROM [dbo].[Student] WHERE [full_name] = 'ГЉГ®Г«Г®Г¤ГјГЄГ® ГЋ. ГЂ.';
